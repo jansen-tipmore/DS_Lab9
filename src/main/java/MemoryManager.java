@@ -31,6 +31,9 @@ public class MemoryManager
    {
     	  MemoryAllocation curr = head;
     	  while (curr.owner != Free && curr.len < size) {
+    		  if(curr.next == sentinel) {
+    			  return null;
+    		  }
     		  curr = curr.next;
     	  }
     	  MemoryAllocation newMemory = new MemoryAllocation(requester,curr.pos, size, curr.next, curr);
@@ -38,10 +41,7 @@ public class MemoryManager
     	  curr.next = newMemory;
     	  curr.len -= size;
     	  return newMemory;
-    	  else {
-    		  return null;
-    	  }
-   }
+}
  
 
 
