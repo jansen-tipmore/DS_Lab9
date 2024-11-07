@@ -1,5 +1,6 @@
 public class MemoryManager
 {
+   protected MemoryAllocation sentinel;
    protected MemoryAllocation head;
     
    protected final String Free = "Free";
@@ -11,7 +12,11 @@ public class MemoryManager
      */
    public MemoryManager(long size)
    {
-   
+	   MemoryAllocation sentinel = new MemoryAllocation("Sentinel", (long) 0, (long) 0, null, null);
+	   MemoryAllocation head = new MemoryAllocation(Free, (long) 0, (long) size, sentinel, sentinel);
+	   sentinel.next = head;
+	   sentinel.prev = head;
+	   
    }
 
 
@@ -24,8 +29,20 @@ public class MemoryManager
     
    public MemoryAllocation requestMemory(long size,String requester)
    {
-      return null;
+    	  MemoryAllocation curr = head;
+    	  while (curr.owner != Free && curr.len < size) {
+    		  curr = curr.next;
+    	  }
+    	  MemoryAllocation newMemory = new MemoryAllocation(requester,curr.pos, size, curr.next, curr);
+    	  curr.next.prev = newMemory;
+    	  curr.next = newMemory;
+    	  curr.len -= size;
+    	  return newMemory;
+    	  else {
+    		  return null;
+    	  }
    }
+ 
 
 
     
