@@ -12,7 +12,7 @@ public class MemoryManager
      */
    public MemoryManager(long size)
    {
-	   MemoryAllocation sentinel = new MemoryAllocation("Sentinel", (long) 0, (long) 0, null, null);
+	   sentinel = new MemoryAllocation("Sentinel", (long) 0, (long) 0, null, null);
 	   head = new MemoryAllocation(Free, (long) 0, (long) size, sentinel, sentinel);
 	   sentinel.next = head;
 	   sentinel.prev = head;
@@ -28,22 +28,19 @@ public class MemoryManager
      */
     
    public MemoryAllocation requestMemory(long size,String requester) {
-	   
-	   if (size > head.len) { 
-		   return null;
-	   }
     	  MemoryAllocation curr = head;
-    	  while (curr.owner != Free && curr.len < size) {
-    		  if(curr.next == sentinel) {
-    			  return null;
+    	  while (curr != sentinel) {
+    		  if(curr.owner.equals(Free) && curr.len >= size) {
+    			  MemoryAllocation newMemory = new MemoryAllocation(requester,curr.pos, size, curr.next, curr);
+    	    	  curr.next.prev = newMemory;
+    	    	  curr.next = newMemory;
+    	    	  curr.pos += size;
+    	    	  curr.len -= size;
+    	    	  return newMemory;
     		  }
     		  curr = curr.next;
-    	  }
-    	  MemoryAllocation newMemory = new MemoryAllocation(requester,curr.pos, size, curr.next, curr);
-    	  curr.next.prev = newMemory;
-    	  curr.next = newMemory;
-    	  curr.len -= size;
-    	  return newMemory;
+    	  }  
+    	  return null;
 } 
     /**
        takes a memoryAllcoation and "returns" it to the system for future allocations.
@@ -52,17 +49,20 @@ public class MemoryManager
      */
    public void returnMemory(MemoryAllocation mem)
    {
-	   if(mem.next.owner == Free && mem.prev.owner == Free) {
-		new MemoryAllocation(Free, mem.prev.pos, (mem.prev.len + mem.len + mem.next.len), mem.next.next, mem.prev.prev);
-	   }
-	   if(mem.next.owner == Free && mem.prev.owner != Free) {
-		   new MemoryAllocation(Free, mem.pos, (mem.len + mem.next.len), mem.next.next, mem.prev);
-	   }
-	   if(mem.prev.owner == Free && mem.next.owner != Free) {
-		   new MemoryAllocation(Free, mem.prev.pos, (mem.len + mem.prev.len), mem.next, mem.prev.prev);
-	   }
-	   else {
 	   mem.owner = Free;
-	   }   
+	   
+	   /*if(mem.next.owner == Free && mem.prev.owner == Free) {
+		new MemoryAllocation(Free, mem.prev.pos, (mem.prev.len + mem.len + mem.next.len), mem.next.next, mem.prev.prev);
+	   } */
+	   if(mem.next.owner.equals(Free) && mem.prev != sentinel) {
+		   mem.len += mem.next.len;
+		   mem.next = mem.next.next;
+		   mem.prev.next = mem;
+	   }
+	   if(mem.prev.owner.equals(Free) && mem.next != sentinel) {
+		   mem.prev.len += mem.len;
+		   mem.prev.next = mem.next;
+		   mem.next.prev = mem.prev;
+	   }  
    }
 }
