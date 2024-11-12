@@ -1,7 +1,7 @@
 public class MemoryManager
 {
    protected MemoryAllocation sentinel;
-   protected MemoryAllocation head;
+   public MemoryAllocation head;
     
    protected final String Free = "Free";
 
@@ -28,12 +28,13 @@ public class MemoryManager
      */
     
    public MemoryAllocation requestMemory(long size,String requester) {
+	   	if(size <= 0) { return null;}
     	  MemoryAllocation curr = head;
     	  while (curr != sentinel) {
     		  if(curr.owner.equals(Free) && curr.len >= size) {
-    			  MemoryAllocation newMemory = new MemoryAllocation(requester,curr.pos, size, curr.next, curr);
-    	    	  curr.next.prev = newMemory;
-    	    	  curr.next = newMemory;
+    			  MemoryAllocation newMemory = new MemoryAllocation(requester,curr.pos, size, curr, curr.prev);
+    	    	  curr.prev = newMemory;
+    	    	  curr.prev.next = curr;
     	    	  curr.pos += size;
     	    	  curr.len -= size;
     	    	  return newMemory;
@@ -50,16 +51,12 @@ public class MemoryManager
    public void returnMemory(MemoryAllocation mem)
    {
 	   mem.owner = Free;
-	   
-	   /*if(mem.next.owner == Free && mem.prev.owner == Free) {
-		new MemoryAllocation(Free, mem.prev.pos, (mem.prev.len + mem.len + mem.next.len), mem.next.next, mem.prev.prev);
-	   } */
-	   if(mem.next.owner.equals(Free) && mem.prev != sentinel) {
+	   if(mem.next.owner.equals(Free)) {
 		   mem.len += mem.next.len;
 		   mem.next = mem.next.next;
 		   mem.prev.next = mem;
 	   }
-	   if(mem.prev.owner.equals(Free) && mem.next != sentinel) {
+	   if(mem.prev.owner.equals(Free)) {
 		   mem.prev.len += mem.len;
 		   mem.prev.next = mem.next;
 		   mem.next.prev = mem.prev;

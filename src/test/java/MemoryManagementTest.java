@@ -17,8 +17,11 @@ class MemoryManagementTest {
 		assertEquals(testm2.getOwner(), "Robert");
 		assertEquals(null, testm3);
 		assertEquals(80, testm4.getPosition());
+		assertEquals(0, mem.head.pos);
 		mem.returnMemory(testm2);
+		assertEquals(0, mem.head.pos);
 		mem.returnMemory(testm4);
+		assertEquals(0, mem.head.pos);
 		MemoryAllocation testm5 = mem.requestMemory((long) 100, "Rosemary");
 		assertEquals(0, testm5.getPosition());	
 		mem.returnMemory(testm5);
@@ -47,7 +50,5 @@ class MemoryManagementTest {
 		mem.returnMemory(testm12);
 		MemoryAllocation testm14 = mem.requestMemory((long)100, "Baxter");
 		assertEquals(0, testm14.getPosition());
-		
-
 	}
 }
