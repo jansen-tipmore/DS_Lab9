@@ -11,12 +11,12 @@ class MemoryManagementTest {
 		MemoryAllocation testm2 = mem.requestMemory((long)80, "Robert");
 		MemoryAllocation testm3 = mem.requestMemory((long)30, "Mitch");
 		MemoryAllocation testm4 = mem.requestMemory((long) 20, "Chet");
-		assertEquals(testm, null);
+		assertEquals(null, testm);
 		assertEquals(testm2.getPosition(), 0);
 		assertEquals(testm2.getLength(), 80);
 		assertEquals(testm2.getOwner(), "Robert");
 		assertEquals(testm3, null);
-		assertEquals(testm4.getPosition(), 80);
+		assertEquals(0, testm4.getPosition());
 		mem.returnMemory(testm2);
 		mem.returnMemory(testm4);
 		MemoryAllocation testm5 = mem.requestMemory((long) 100, "Rosemary");

@@ -10,7 +10,6 @@ public class MemoryAllocation
 
     //You might want to add additional data/methods here
 
-
     //feel free to alter the constructor if you need/want to
     public MemoryAllocation(String owner, long pos, long len, MemoryAllocation next, MemoryAllocation prev)
     {
